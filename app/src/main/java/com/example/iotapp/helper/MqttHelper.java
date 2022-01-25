@@ -143,29 +143,54 @@ public class MqttHelper {
 //        }
 //    }
 
-    public void publish() throws MqttException {
-        String broker = "tcp://m16.cloudmqtt.com:15998";
-        String topicName = "KodeHauz/ProjectCreate/Device";
-        int qos = 1;
-        String clientId = "ExampleAndroidClient";
+//    public void publish() throws MqttException {
+//        String broker = "tcp://m16.cloudmqtt.com:15998";
+//        String topicName = "KodeHauz/ProjectCreate/Device";
+//        int qos = 1;
+//        String clientId = "ExampleAndroidClient";
+//
+//        MqttClient mqttClient = new MqttClient(broker,clientId);
+////Mqtt ConnectOptions is used to set the additional features to mqtt message
+//
+//        MqttConnectOptions connOpts = new MqttConnectOptions();
+//
+//        connOpts.setCleanSession(true); //no persistent session
+//        connOpts.setKeepAliveInterval(1000);
+//
+//
+//        MqttMessage message = new MqttMessage("Ed Sheeran".getBytes());
+//
+//        message.setQos(qos);     //sets qos level 1
+//        message.setRetained(true); //sets retained message
+//
+//        MqttTopic topic2 = mqttClient.getTopic(topicName);
+//
+//        mqttClient.connect(connOpts); //connects the broker with connect options
+//        topic2.publish(message);    // publishes the message to the topic(test/topic)
+//    }
+    public void publish(String payload){
+        try {
+            if (!mqttAndroidClient.isConnected()){
+                mqttAndroidClient.connect();
+            }
 
-        MqttClient mqttClient = new MqttClient(broker,clientId);
-//Mqtt ConnectOptions is used to set the additional features to mqtt message
+            MqttMessage msg = new MqttMessage();
+            msg.setPayload(payload.getBytes());
+            msg.setQos(0);
+            mqttAndroidClient.publish(subscriptionTopic, msg, null, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    Log.i(TAG, "Publish message");
+                }
 
-        MqttConnectOptions connOpts = new MqttConnectOptions();
-
-        connOpts.setCleanSession(true); //no persistent session
-        connOpts.setKeepAliveInterval(1000);
-
-
-        MqttMessage message = new MqttMessage("Ed Sheeran".getBytes());
-
-        message.setQos(qos);     //sets qos level 1
-        message.setRetained(true); //sets retained message
-
-        MqttTopic topic2 = mqttClient.getTopic(topicName);
-
-        mqttClient.connect(connOpts); //connects the broker with connect options
-        topic2.publish(message);    // publishes the message to the topic(test/topic)
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Log.i(TAG, "Publish failed");
+                }
+            });
+        } catch (MqttException e) {
+            Log.e(TAG,e.toString());
+            e.printStackTrace();
+        }
     }
 }

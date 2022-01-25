@@ -6,58 +6,50 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.iotapp.helper.MqttHelper;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-public class MainActivity extends AppCompatActivity {
+public class TurnOff extends AppCompatActivity {
+
 
     MqttHelper mqttHelper;
-    TextView subscribe_text;
-    ImageButton btnOn;
+    ImageButton btnOff;
 
 
     public MqttAndroidClient mqttAndroidClient;
     String TAG;
-     String serverUri;
+    String serverUri;
 
-     String clientId;
-     String subscriptionTopic ;
-
+    String clientId;
+    String subscriptionTopic ;
 
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_turn_off);
 
         TAG = "";
-        btnOn =  findViewById(R.id.powerButtonFragmentLight);
-        subscribe_text = findViewById(R.id.text_subscribe);
+        btnOff =  findViewById(R.id.powerButtonFragmentDark);
         mqttHelper = new MqttHelper(getApplicationContext());
         subscriptionTopic = "KodeHauz/ProjectCreate/Device";
         clientId = "ExampleAndroidClient";
         serverUri = "tcp://m16.cloudmqtt.com:15998";
         final MqttMessage message = new MqttMessage();
-          message.setPayload("Yes".getBytes());
+        message.setPayload("Yes".getBytes());
         mqttAndroidClient = new MqttAndroidClient(getApplicationContext(),serverUri, clientId);
 
-        btnOn.setOnClickListener(new View.OnClickListener() {
+        btnOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mqttHelper.publish("on");
-                Intent intent = new Intent(MainActivity.this,TurnOff.class);
+                mqttHelper.publish("off");
+                Intent intent = new Intent(TurnOff.this,MainActivity.class);
                 startActivity(intent);
 
             }
@@ -78,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
                 Log.w("Debug", mqttMessage.toString());
-                subscribe_text.setText(mqttMessage.toString());
             }
 
             @Override
@@ -103,5 +94,5 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+}
 }
